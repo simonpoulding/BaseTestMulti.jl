@@ -50,7 +50,7 @@ To handle iterations of the test within the test block itself, use `@testset Mul
 		end
 	end
 
-`@mtestset` supports the same for syntax as `@testset`:
+`@mtestset` supports the same `for` syntax as `@testset`:
 
 	@mtestset "rand returns uniformally distributed values across 1 to $bound" for bound in 6:20
 		x = rand(1:bound)
