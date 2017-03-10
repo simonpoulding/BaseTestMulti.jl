@@ -42,6 +42,12 @@ using Distributions
 
 	@testset MultiTestSet "values_are FAIL" begin
 		for x in [:b,:a,:d]
+			@mtest_values_are [:a,:d,:b] x
+		end
+	end
+
+	@testset MultiTestSet "values_are FAIL" begin
+		for x in [:b,:a,:d]
 			@mtest_values_are [:a,:c,:b] x
 		end
 	end
@@ -104,8 +110,9 @@ using Distributions
 		end
 	end
 
-	@mtestset "distributed_as uses correct scope (success prob, p=$p) FAIL exc PASS when p=0.5" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
-		@mtest_distributed_as Binomial(30,p) rand(DiscreteUniform(0,30))
+	@mtestset "distributed_as uses correct scope (p=$p) FAIL exc PASS when p=0.5" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
+		x = rand(DiscreteUniform(0,30))
+		@mtest_distributed_as Binomial(30,p) x 
 	end
 
 	@mtestset "@mtest macros inside if statements case: $case PASS (case1) & FAIL (case2)" for case in [:case1, :case2]
