@@ -39,7 +39,7 @@ For example:
 		@mtest_distributed_as Uniform(1,6) x
 	end
 
-To handle iterations of the test within the test block itself, use `@testset MultiTestSet` instead of `@mtestset`:
+To handle iterations within the test block itself, use `@testset MultiTestSet` instead of `@mtestset`:
 
 	@testset MultiTestSet "rand returns uniformally distributed values" alpha=0.05 begin
 		for i in 1:100
@@ -55,9 +55,9 @@ To handle iterations of the test within the test block itself, use `@testset Mul
 		@mtest_distributed_as Uniform(1,bound) x
 	end
 
-(This is equivalent to 15 testsets -- one for each value of `bound` between 6 and 20 -- and the values collected by `@mtest...` macros do not accumulate across these test sets.) 
+(This is equivalent to 15 test sets -- one for each value of `bound` between 6 and 20 -- and the values collected by `@mtest...` macros do not accumulate across these test sets.) 
 
-`@mtestset` can be embedded in `@testset` and vice versa:
+`@mtestset` can be embedded in a `@testset` and vice versa:
 
 	@testset "my test set" begin
 		@mtestset "rand returns different values" begin
