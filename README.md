@@ -13,12 +13,10 @@ To use BaseTestMulti features within particular a test set, specify it with `@mt
 
 	using Base.Test
 	using BaseTestMulti
-	@testset
-		@mtestset "rand returns different values" begin
-			x = rand(1:6)
-			@test 1 <= x <= 6
-			@mtest_values_vary x
-		end
+	@mtestset "rand returns different values" begin
+		x = rand(1:6)
+		@test 1 <= x <= 6
+		@mtest_values_vary x
 	end
 
 The test block is executed multiple times (30 times, by default).  `@test_...` macros are applied as normal: once for each iteration of the test block.  But `@mtest_...` macros collect the values being tested, and then apply a test to the collection of values once the all iterations are complete:
