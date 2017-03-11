@@ -110,7 +110,7 @@ using Distributions
 		end
 	end
 
-	@mtestset "distributed_as uses correct scope (p=$p) FAIL exc PASS when p=0.5" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
+	@mtestset "distributed_as uses correct scope (p=$p) FAIL" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
 		x = rand(DiscreteUniform(0,30))
 		@mtest_distributed_as Binomial(30,p) x 
 	end

@@ -7,6 +7,7 @@ export @mtest_values_vary, @mtest_values_are, @mtest_values_include, @mtest_that
 import Base.Test: record, finish
 using Base.Test: AbstractTestSet, DefaultTestSet, Result, Pass, Fail, Error, ExecutionResult, Returned, Threw, get_testset
 using HypothesisTests
+using Distributions
 
 # wrap DefaultTestSet with additional fields for samples taken at mtest macros
 # we need DefaulTestSet since it handles pretty printing and accummulation of results
@@ -168,12 +169,15 @@ end
 
 # mtest_distributed_as
 # comparison need not be a Distribution - needs only to permit rand( ,n); a vector would work
-# test is that ranksum test against a sample of the same length from the distribution has a p-value above significance level alpha
+# test is that KS test against a sample of the same length from the distribution has a p-value above significance level alpha
+# note: could use ExactOneSampleKSTest if distvar is a Distributions.UnivariateDis
 macro mtest_distributed_as(distex, ex)
 	macrosym = :mtest_distributed_as
 	distvar = gensym(:dist)
 	paramex = :( $distvar = $(esc(distex)) )
-	mtestclosureex = :( (_s,_a)->(pvalue(MannWhitneyUTest(convert(Vector{Real},_s), rand($distvar, length(_s)))) > _a,
+	mtestclosureex = :( (_s,_a)->(pvalue(isa($distvar, UnivariateDistribution) ?
+									ExactOneSampleKSTest(convert(Vector{Real},_s), $distvar) :
+									ApproximateTwoSampleKSTest(convert(Vector{Real},_s),rand($distvar, length(_s)))) > _a,
 		 					Symbol($(string(macrosym))), $(string(ex)), string($distvar) ) )
 	mtest_macro(ex, paramex, mtestclosureex, macrosym)
 end
