@@ -110,7 +110,7 @@ using Distributions
 		end
 	end
 
-	@mtestset "distributed_as uses correct scope (p=$p) FAIL" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
+	@mtestset "distributed_as uses correct scope (p=$p) FAIL (sometimes PASS for p=0.5)" reps=20 alpha=0.01 for p in [0.1, 0.5, 0.9]
 		x = rand(DiscreteUniform(0,30))
 		@mtest_distributed_as Binomial(30,p) x 
 	end
@@ -122,5 +122,15 @@ using Distributions
 		else
 			@mtest_values_include [0,2,6] x
 		end			
+	end
+	
+	@mtestset "distributed_as distribution" begin
+		x = rand(Geometric(0.2))
+		@mtest_distributed_as Geometric(0.2) x
+	end
+
+	@mtestset "distributed_as vector" begin
+		x = rand(Geometric(0.3))
+		@mtest_distributed_as [3  6  3  0  1  4  1  1  4  2] x
 	end
 end

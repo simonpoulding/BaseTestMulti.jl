@@ -169,16 +169,21 @@ end
 
 # mtest_distributed_as
 # comparison need not be a Distribution - needs only to permit rand( ,n); a vector would work
-# test is that KS test against a sample of the same length from the distribution has a p-value above significance level alpha
-# note: could use ExactOneSampleKSTest if distvar is a Distributions.UnivariateDis
+# test is Mann Whitney Ranksum against a sample of the same length with significance level alpha
+# NOTE: THIS IS NOT IDEAL:  Ranksum is NOT a test of same distributions, only of stochastic equivalence, i.e. if a sample is drawn from each,
+# the chance that the first is greater than the second is 0.5.
+# Ideally would like to use a test such as Kolmogorov-Smirnov, but KS applies only to continuous distribution and is unrealiable when there are
+# many tied values (this is seen in practice with ExactOneSampleKSTest and ApproximateTwoSampleKSTest from Distributions.jl)
 macro mtest_distributed_as(distex, ex)
 	macrosym = :mtest_distributed_as
 	distvar = gensym(:dist)
 	paramex = :( $distvar = $(esc(distex)) )
-	mtestclosureex = :( (_s,_a)->(pvalue(isa($distvar, UnivariateDistribution) ?
-									ExactOneSampleKSTest(convert(Vector{Real},_s), $distvar) :
-									ApproximateTwoSampleKSTest(convert(Vector{Real},_s),rand($distvar, length(_s)))) > _a,
+	mtestclosureex = :( (_s,_a)->(pvalue(MannWhitneyUTest(convert(Vector{Real},_s),rand($distvar, length(_s)))) > _a,
 		 					Symbol($(string(macrosym))), $(string(ex)), string($distvar) ) )
+	# mtestclosureex = :( (_s,_a)->(pvalue(isa($distvar, UnivariateDistribution) ?
+	# 								ExactOneSampleKSTest(convert(Vector{Real},_s), $distvar) :
+	# 								ApproximateTwoSampleKSTest(convert(Vector{Real},_s),rand($distvar, length(_s)))) > _a,
+	# 	 					Symbol($(string(macrosym))), $(string(ex)), string($distvar) ) )
 	mtest_macro(ex, paramex, mtestclosureex, macrosym)
 end
 
